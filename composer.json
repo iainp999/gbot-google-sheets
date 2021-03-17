@@ -1,0 +1,15 @@
+{
+    "name": "iainp999/gbot-google-sheets",
+    "description": "Writes GlitcherBot data to Google sheets.",
+    "type": "glitcherbot-package",
+    "authors": [
+        {
+            "name": "Iain Potter",
+            "email": "nospam@fore-front.co.uk"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "google/apiclient": "^2.0"
+    }
+}
