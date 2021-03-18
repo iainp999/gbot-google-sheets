@@ -1,6 +1,6 @@
 <?php
 
-namespace ScraperBot\GoogleSheets\Subscriber;
+namespace ScraperBot\gbotGoogleSheets\Subscriber;
 
 use Google\Exception;
 use ScraperBot\Event\CrawlCompleteEvent;
@@ -101,8 +101,6 @@ class CrawlSubscriber implements EventSubscriberInterface {
      * @throws Exception
      */
     private function getClient() {
-        require __DIR__ . '/../../vendor/autoload.php';
-
         $client = new \Google_Client();
         $client->setApplicationName('Google Sheets API PHP Quickstart');
         $client->setScopes(\Google_Service_Sheets::DRIVE);
