@@ -6,6 +6,7 @@ use Google\Exception;
 use ScraperBot\Event\CrawlCompleteEvent;
 use ScraperBot\Event\CrawledEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Listen to crawl events and write the data to google sheets.
@@ -52,12 +53,30 @@ class CrawlSubscriber implements EventSubscriberInterface {
             ]
         ]);
 
-        // TODO: store ID on first run as config, read from YAML.
-        $spreadsheet = $service->spreadsheets->create($spreadsheet, [
-            'fields' => 'spreadsheetId'
-        ]);
+        // Check for an existing sheet, or create it and store the ID if it doesn't exist.
+        $config_file = __DIR__ . '/../../config.yaml';
 
-        printf("Spreadsheet ID: %s\n", $spreadsheet->spreadsheetId);
+        if (file_exists($config_file)) {
+            $config = Yaml::parseFile($config_file);
+
+            var_dump($config);
+
+            $existing_sheet = isset($config['sheet_id']) ? $config['sheet_id'] : NULL;
+        }
+        else {
+            $spreadsheet = $service->spreadsheets->create($spreadsheet, [
+                'fields' => 'spreadsheetId'
+            ]);
+
+            $config = [
+              'sheet_id' => $spreadsheet->spreadsheetId,
+            ];
+
+            file_put_contents($config_file, $config);
+            $existing_sheet = $spreadsheet->spreadsheetId;
+        }
+
+        printf("Spreadsheet ID: %s\n", $existing_sheet);
 
         // Write Data.
         $body = new \Google_Service_Sheets_ValueRange([
@@ -66,7 +85,7 @@ class CrawlSubscriber implements EventSubscriberInterface {
         $params = [
             'valueInputOption' => 'RAW'
         ];
-        $result = $service->spreadsheets_values->append($spreadsheet->spreadsheetId, 'Sheet1!A:E', $body, $params);
+        $result = $service->spreadsheets_values->append($existing_sheet, 'Sheet1!A:E', $body, $params);
 
         printf("%d cells appended.", $result->getUpdates()->getUpdatedCells());
     }
