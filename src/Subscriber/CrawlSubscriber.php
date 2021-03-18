@@ -58,9 +58,6 @@ class CrawlSubscriber implements EventSubscriberInterface {
 
         if (file_exists($config_file)) {
             $config = Yaml::parseFile($config_file);
-
-            var_dump($config);
-
             $existing_sheet = isset($config['sheet_id']) ? $config['sheet_id'] : NULL;
         }
         else {
@@ -85,7 +82,7 @@ class CrawlSubscriber implements EventSubscriberInterface {
         $params = [
             'valueInputOption' => 'RAW'
         ];
-        $result = $service->spreadsheets_values->append($existing_sheet, 'Sheet1!A:E', $body, $params);
+        $result = $service->spreadsheets_values->append($existing_sheet, 'Sheet1!A:Z', $body, $params);
 
         printf("%d cells appended.", $result->getUpdates()->getUpdatedCells());
     }
